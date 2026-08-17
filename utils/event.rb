@@ -19,6 +19,17 @@ class Event
     Date: #{@date}, Start Time: #{@starttime}, End Time: #{@endtime}\n\n"
   end
 
+  def m_view
+    details = []
+    details << @id
+    details << @title.to_s if @title
+    details << @description.to_s if @date
+    details << @starttime.strftime("%H:%M")
+    details << @endtime.strftime("%H:%M")
+
+    puts details.join(", ")
+  end
+
   def edit(new_title, new_date, new_starttime, new_endtime, new_description)
     @title = new_title
     @description = new_description

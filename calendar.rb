@@ -1,18 +1,18 @@
 require_relative "utils/event"
-require_relative "utils/userio"
+require_relative "utils/user_io"
 
 class Calendar
   attr_accessor :events
 
   def initialize
     @events = []
-    # read from file an dload in array
+    # read from file and load in array
   end
 
   def add_event(title, date, starttime, endtime, description)
     if !clash?(date, starttime, endtime)
-      lastid = @events.map(&:id).max || 0
-      event = Event.new(lastid + 1, title, date, starttime, endtime, description)
+      last_id = @events.map(&:id).max || 0
+      event = Event.new(last_id + 1, title, date, starttime, endtime, description)
       @events << event
       puts "event added successfully"
     else
@@ -22,6 +22,8 @@ class Calendar
 
   def remove_event(id)
     event = find_event_by_id(id)
+    return if event.nil?
+
     @events.delete(event)
     "event remove successful!"
   end
@@ -35,6 +37,8 @@ class Calendar
 
   def edit_event(id, new_title, new_date, new_starttime, new_endtime, new_description)
     event = find_event_by_id(id)
+    return if event.nil?
+
     event.edit(new_title, new_date, new_starttime, new_endtime, new_description)
     print "in edit calendar successful"
   end
@@ -43,11 +47,7 @@ class Calendar
     @events.select { |event| event.date == date } || []
   end
 
-  def find_event_by_title(title)
-    @events.select { |event| event.title == title } || []
-  end
-
-  def validid?(tid)
+  def valid_id?(tid)
     !!find_event_by_id(tid)
   end
 
@@ -56,8 +56,9 @@ class Calendar
   end
 
   def clash?(date, starttime, endtime, curr_id = nil)
-    @events.each do |currevent|
-      if currevent.id != curr_id && currevent.date == date && currevent.starttime < endtime && starttime < currevent.endtime
+    @events.each do |curr_event|
+      if curr_event.id != curr_id && curr_event.date == date &&
+         curr_event.starttime < endtime && starttime < curr_event.endtime
         return true
       end
     end
@@ -94,5 +95,32 @@ class Calendar
         puts "-" * 20
       end
     end
+  end
+
+  def event_count_by_day(month, year)
+    counts = Hash.new(0)
+    find_event_by_month(month, year).each do |event|
+      counts[event.date.day] += 1
+    end
+    counts
+  end
+
+  def month_view(month, year, col = 16)
+    first_day = Date.new(year, month, 1)
+    last_day = Date.new(year, month, -1)
+    counts = event_count_by_day(month, year)
+
+    puts "#{Date::MONTHNAMES[month]} #{year}".center(col * 7)
+    puts %w[Sun Mon Tue Wed Thu Fri Sat].map { |day| day.ljust(col) }.join
+    print " " * col * first_day.wday
+    (first_day..last_day).each do |date|
+      # data = find_event_by_date(date)
+      # data.each(&:m_view)
+      cell = date.day.to_s
+      cell += "(#{counts[date.day]})" if counts[date.day].positive?
+      print cell.ljust(col)
+      puts "" if date.wday == 6
+    end
+    puts "" unless last_day.wday == 6
   end
 end
