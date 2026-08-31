@@ -11,15 +11,15 @@ def edit_menu(calendar)
 
   title = get_user_input("enter new event title else enter to skip ", calendar.find_event_by_id(e_id).title)
   date = get_user_input_date("enter new event date else enter to skip ", calendar.find_event_by_id(e_id).date)
-  starttime = get_user_input_time("enter new event start time else enter to skip ", date,
-                                  calendar.find_event_by_id(e_id).starttime)
-  endtime = get_user_input_time("enter new event end time else enter to skip ", date,
-                                calendar.find_event_by_id(e_id).endtime)
-  return unless valid_dur?(starttime, endtime) && !calendar.clash?(date, starttime, endtime, e_id)
+  start_time = get_user_input_time("enter new event start time else enter to skip ", date,
+                                   calendar.find_event_by_id(e_id).start_time)
+  end_time = get_user_input_time("enter new event end time else enter to skip ", date,
+                                 calendar.find_event_by_id(e_id).end_time)
+  return unless valid_dur?(start_time, end_time) && !calendar.clash?(date, start_time, end_time, e_id)
 
   description = get_user_input("enter new event description else enter to skip ",
                                calendar.find_event_by_id(e_id).description)
-  calendar.edit_event(e_id, title, date, starttime, endtime, description)
+  calendar.edit_event(e_id, title, date, start_time, end_time, description)
   "event updated successfully"
 end
 
@@ -45,18 +45,18 @@ def user_menu(calendar)
   user_choice = valid_choice
   case user_choice
   when 1
-    starttime = endtime = 0
+    start_time = end_time = 0
     title = get_user_input("enter event title")
     date = get_user_input_date("enter event date")
     date = get_user_input_date("enter valid future event date") while date < Date.today
     loop do
-      starttime = get_user_input_time("enter event  start time", date)
-      endtime = get_user_input_time("enter event  end time", date)
-      puts " End time must be after start time. Please try again." unless valid_dur?(starttime, endtime)
-      break if valid_dur?(starttime, endtime)
+      start_time = get_user_input_time("enter event  start time", date)
+      end_time = get_user_input_time("enter event  end time", date)
+      puts " End time must be after start time. Please try again." unless valid_dur?(start_time, end_time)
+      break if valid_dur?(start_time, end_time)
     end
     description = get_user_input("enter event description")
-    calendar.add_event(title, date, starttime, endtime, description)
+    calendar.add_event(title, date, start_time, end_time, description)
   when 2
     return puts "no events to remove" if calendar.events.empty?
 

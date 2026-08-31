@@ -9,10 +9,10 @@ class Calendar
     # read from file and load in array
   end
 
-  def add_event(title, date, starttime, endtime, description)
-    if !clash?(date, starttime, endtime)
+  def add_event(title, date, start_time, end_time, description)
+    if !clash?(date, start_time, end_time)
       last_id = @events.map(&:id).max || 0
-      event = Event.new(last_id + 1, title, date, starttime, endtime, description)
+      event = Event.new(last_id + 1, title, date, start_time, end_time, description)
       @events << event
       puts "event added successfully"
     else
@@ -35,11 +35,11 @@ class Calendar
     end
   end
 
-  def edit_event(id, new_title, new_date, new_starttime, new_endtime, new_description)
+  def edit_event(id, new_title, new_date, new_start_time, new_end_time, new_description)
     event = find_event_by_id(id)
     return if event.nil?
 
-    event.edit(new_title, new_date, new_starttime, new_endtime, new_description)
+    event.edit(new_title, new_date, new_start_time, new_end_time, new_description)
     print "in edit calendar successful"
   end
 
@@ -55,10 +55,10 @@ class Calendar
     @events.find { |event| event.id == id }
   end
 
-  def clash?(date, starttime, endtime, curr_id = nil)
+  def clash?(date, start_time, end_time, curr_id = nil)
     @events.each do |curr_event|
       if curr_event.id != curr_id && curr_event.date == date &&
-         curr_event.starttime < endtime && starttime < curr_event.endtime
+         curr_event.start_time < end_time && start_time < curr_event.end_time
         return true
       end
     end
@@ -114,8 +114,6 @@ class Calendar
     puts %w[Sun Mon Tue Wed Thu Fri Sat].map { |day| day.ljust(col) }.join
     print " " * col * first_day.wday
     (first_day..last_day).each do |date|
-      # data = find_event_by_date(date)
-      # data.each(&:m_view)
       cell = date.day.to_s
       cell += "(#{counts[date.day]})" if counts[date.day].positive?
       print cell.ljust(col)

@@ -63,8 +63,8 @@ def get_user_input_month(prompt = 'Enter month and year else press enter to view
   end
 end
 
-def valid_dur?(starttime, endtime)
-  (endtime - starttime).positive?
+def valid_dur?(start_time, end_time)
+  (end_time - start_time).positive?
 end
 
 def get_user_input_id(prompt)
