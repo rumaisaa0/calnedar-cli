@@ -14,7 +14,7 @@ class Calendar
       last_id = @events.map(&:id).max || 0
       event = Event.new(last_id + 1, title, date, starttime, endtime, description)
       @events << event
-      puts "event added successfully"
+      puts "Event added successfully"
     else
       puts "clash detected"
     end
