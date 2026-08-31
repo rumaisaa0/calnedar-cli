@@ -10,7 +10,7 @@ class Calendar
   end
 
   def add_event(title, date, starttime, endtime, description)
-    if !clash?(date, starttime, endtime)
+    unless clash?(date, starttime, endtime)
       last_id = @events.map(&:id).max || 0
       event = Event.new(last_id + 1, title, date, starttime, endtime, description)
       @events << event
