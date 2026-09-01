@@ -34,7 +34,8 @@ class Calendar
   end
 
   def list_events
-    puts ' no events to display' if @events.empty?
+    return puts ' no events to display' if @events.empty?
+
     @events.each do |event|
       puts event
     end
