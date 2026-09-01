@@ -40,11 +40,11 @@ class Calendar
     end
   end
 
-  def edit_event(id, new_title, new_date, new_start_time, new_end_time, new_description)
+  def edit_event(id, attributes)
     event = find_event_by_id(id)
     return if event.nil?
 
-    event.edit(new_title, new_date, new_start_time, new_end_time, new_description)
+    event.edit(attributes)
     print 'in edit calendar successful'
   end
 
@@ -111,19 +111,37 @@ class Calendar
   end
 
   def month_view(month, year, col = 16)
-    first_day = Date.new(year, month, 1)
-    last_day = Date.new(year, month, -1)
+    first_day, last_day = first_last_day_of_month(month, year)
     counts = event_count_by_day(month, year)
 
+    print_month_header(month, year, col)
+    print_calendar_days(first_day, last_day, counts, col)
+  end
+
+  def first_last_day_of_month(month, year)
+    first_day = Date.new(year, month, 1)
+    last_day = Date.new(year, month, -1)
+    [first_day, last_day]
+  end
+
+  def print_month_header(month, year, col)
     puts "#{Date::MONTHNAMES[month]} #{year}".center(col * 7)
     puts %w[Sun Mon Tue Wed Thu Fri Sat].map { |day| day.ljust(col) }.join
+  end
+
+  def print_calendar_days(first_day, last_day, counts, col)
     print ' ' * col * first_day.wday
     (first_day..last_day).each do |date|
-      cell = date.day.to_s
-      cell += "(#{counts[date.day]})" if counts[date.day].positive?
-      print cell.ljust(col)
+      print calendar_cell(date, counts, col)
       puts '' if date.wday == 6
     end
     puts '' unless last_day.wday == 6
+  end
+
+  def calendar_cell(date, counts, col)
+    cell = date.day.to_s cell + "(#{counts[date.day]})"
+    return unless counts[date.day].positive?
+
+    cell.ljust(col)
   end
 end
