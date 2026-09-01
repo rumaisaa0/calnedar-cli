@@ -1,6 +1,9 @@
-require_relative "utils/event"
-require_relative "utils/user_io"
+# frozen_string_literal: true
 
+require_relative 'utils/event'
+require_relative 'utils/user_io'
+
+# Manages calendar events, including adding, updating, and removing events.
 class Calendar
   attr_accessor :events
 
@@ -10,13 +13,15 @@ class Calendar
   end
 
   def add_event(title, date, start_time, end_time, description)
-    if !clash?(date, start_time, end_time)
+    if clash?(date, start_time, end_time)
+      puts 'clash detected'
+    else
       last_id = @events.map(&:id).max || 0
       event = Event.new(last_id + 1, title, date, start_time, end_time, description)
+
       @events << event
-      puts "event added successfully"
-    else
-      puts "clash detected"
+
+      puts 'Event added successfully'
     end
   end
 
@@ -25,11 +30,11 @@ class Calendar
     return if event.nil?
 
     @events.delete(event)
-    "event remove successful!"
+    'event remove successful!'
   end
 
   def list_events
-    puts " no events to display" if @events.empty?
+    puts ' no events to display' if @events.empty?
     @events.each do |event|
       puts event
     end
@@ -40,7 +45,7 @@ class Calendar
     return if event.nil?
 
     event.edit(new_title, new_date, new_start_time, new_end_time, new_description)
-    print "in edit calendar successful"
+    print 'in edit calendar successful'
   end
 
   def find_event_by_date(date)
@@ -78,7 +83,7 @@ class Calendar
   end
 
   def find_event_by_month(month, year)
-    events_in_month = @events.select do |event|
+    @events.select do |event|
       event.date.month == month && event.date.year == year
     end
   end
@@ -92,7 +97,7 @@ class Calendar
       puts "Events in #{Date::MONTHNAMES[month]} #{year}:"
       events_in_month.each do |event|
         puts event
-        puts "-" * 20
+        puts '-' * 20
       end
     end
   end
@@ -112,13 +117,13 @@ class Calendar
 
     puts "#{Date::MONTHNAMES[month]} #{year}".center(col * 7)
     puts %w[Sun Mon Tue Wed Thu Fri Sat].map { |day| day.ljust(col) }.join
-    print " " * col * first_day.wday
+    print ' ' * col * first_day.wday
     (first_day..last_day).each do |date|
       cell = date.day.to_s
       cell += "(#{counts[date.day]})" if counts[date.day].positive?
       print cell.ljust(col)
-      puts "" if date.wday == 6
+      puts '' if date.wday == 6
     end
-    puts "" unless last_day.wday == 6
+    puts '' unless last_day.wday == 6
   end
 end
