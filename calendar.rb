@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'utils/event'
+require_relative 'models/event'
 require_relative 'utils/user_io'
 
 # Manages calendar events, including adding, updating, and removing events.

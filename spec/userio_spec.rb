@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'c_spec'
+require_relative 'spec_helper'
 require_relative '../utils/user_io'
 
 RSpec.describe 'valid_dur?' do

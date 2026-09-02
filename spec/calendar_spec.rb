@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'c_spec'
+require_relative 'spec_helper'
 
 RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
   subject(:calendar) { described_class.new }

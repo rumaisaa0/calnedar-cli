@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'c_spec'
+require_relative 'spec_helper'
 
 RSpec.describe Event do # rubocop:disable Metrics/BlockLength
   let(:date) { Date.new(2026, 8, 15) }
