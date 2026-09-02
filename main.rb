@@ -103,7 +103,7 @@ def add_event_helper(calendar)
   description = get_user_input('enter event description')
   date = valid_date
   start_time, end_time = valid_time(date)
-  calendar.add_event(title, date, start_time, end_time, description)
+  calendar.add_event(date, start_time, end_time, { title: title, description: description })
 end
 
 def valid_date
