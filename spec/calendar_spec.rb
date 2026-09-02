@@ -7,8 +7,8 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
 
   let(:date) { Date.new(2026, 8, 15) }
 
-  def add(calendar, title, start_hour, end_hour, on_date: date, description: 'desc')
-    calendar.add_event(title, on_date, time_on(on_date, start_hour, 0), time_on(on_date, end_hour, 0), description)
+  def add(calendar, start_hour, end_hour, on_date: date, attributes: {})
+    calendar.add_event(on_date, time_on(on_date, start_hour, 0), time_on(on_date, end_hour, 0), attributes)
   end
 
   describe '#add_event' do

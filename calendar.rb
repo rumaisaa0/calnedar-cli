@@ -2,6 +2,7 @@
 
 require_relative 'models/event'
 require_relative 'utils/user_io'
+require_relative 'utils/calendar_view'
 
 # Manages calendar events, including adding, updating, and removing events.
 class Calendar
@@ -12,12 +13,12 @@ class Calendar
     # read from file and load in array
   end
 
-  def add_event(title, date, start_time, end_time, description)
+  def add_event(date, start_time, end_time, attributes = {})
     if clash?(date, start_time, end_time)
       puts 'clash detected'
     else
       last_id = @events.map(&:id).max || 0
-      event = Event.new(last_id + 1, title, date, start_time, end_time, description)
+      event = Event.new(last_id + 1, date, start_time, end_time, attributes)
 
       @events << event
 
@@ -123,26 +124,5 @@ class Calendar
     first_day = Date.new(year, month, 1)
     last_day = Date.new(year, month, -1)
     [first_day, last_day]
-  end
-
-  def print_month_header(month, year, col)
-    puts "#{Date::MONTHNAMES[month]} #{year}".center(col * 7)
-    puts %w[Sun Mon Tue Wed Thu Fri Sat].map { |day| day.ljust(col) }.join
-  end
-
-  def print_calendar_days(first_day, last_day, counts, col)
-    print ' ' * col * first_day.wday
-    (first_day..last_day).each do |date|
-      print calendar_cell(date, counts, col)
-      puts '' if date.wday == 6
-    end
-    puts '' unless last_day.wday == 6
-  end
-
-  def calendar_cell(date, counts, col)
-    cell = date.day.to_s cell + "(#{counts[date.day]})"
-    return unless counts[date.day].positive?
-
-    cell.ljust(col)
   end
 end

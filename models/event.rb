@@ -7,10 +7,10 @@ class Event
   attr_reader :id
   attr_accessor :title, :description, :date, :start_time, :end_time
 
-  def initialize(id, title, date, start_time, end_time, description)
+  def initialize(id, date, start_time, end_time, attributes = {})
     @id = id
-    @title = title
-    @description = description
+    @title = attributes[:title]
+    @description = attributes[:description]
     @date = date
     @start_time = start_time
     @end_time = end_time
