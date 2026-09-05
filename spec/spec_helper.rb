@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../utils/event'
+require_relative '../models/event'
 require_relative '../calendar'
 require 'date'
 require 'time'

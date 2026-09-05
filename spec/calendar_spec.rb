@@ -7,8 +7,12 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
 
   let(:date) { Date.new(2026, 8, 15) }
 
-  def add(calendar, start_hour, end_hour, on_date: date, attributes: {})
-    calendar.add_event(on_date, time_on(on_date, start_hour, 0), time_on(on_date, end_hour, 0), attributes)
+  def add(calendar, title, start_hour, end_hour, on_date: date)
+    calendar.add_event(on_date, time_on(on_date, start_hour, 0), time_on(on_date, end_hour, 0), title: title)
+  end
+  let(:overlapping_event) do
+    { title: 'Overlapping',
+      description: 'd' }
   end
 
   describe '#add_event' do
@@ -19,15 +23,20 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
     it 'does not add the event when it overlaps an existing one on the same date' do
       add(calendar, 'Meeting', 9, 10)
 
-      expect { calendar.add_event('Overlapping', date, time_on(date, 9, 30), time_on(date, 10, 30), 'd') }
+      expect do
+        calendar.add_event(date, time_on(date, 9, 30), time_on(date, 10, 30),
+                           overlapping_event)
+      end
         .not_to(change { calendar.events.size })
     end
 
     it 'prints a clash message when the times overlap' do
       add(calendar, 'Meeting', 9, 10)
 
-      expect { calendar.add_event('Overlapping', date, time_on(date, 9, 30), time_on(date, 10, 30), 'd') }
-        .to output(/clash detected/).to_stdout
+      expect do
+        calendar.add_event(date, time_on(date, 9, 30), time_on(date, 10, 30), overlapping_event)
+      end
+        .to output(/clashes with an existing event/).to_stdout
     end
 
     it 'allows a second event on the same date once the first one ends' do
@@ -48,7 +57,7 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
   describe '#remove_event' do
     it 'removes the matching event' do
       add(calendar, 'Meeting', 9, 10)
-      id = calendar.events.first.id
+      id = calendar.events.values.first.id
 
       calendar.remove_event(id)
 
@@ -79,10 +88,11 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
   describe '#edit_event' do
     it "updates the event's fields" do
       add(calendar, 'Meeting', 9, 10)
-      id = calendar.events.first.id
+      id = calendar.events.values.first.id
       new_date = date + 1
 
-      calendar.edit_event(id, 'Renamed', new_date, time_on(new_date, 14, 0), time_on(new_date, 15, 0), 'New desc')
+      calendar.edit_event(id, title: 'Renamed', date: new_date, start_time: time_on(new_date, 14, 0),
+                              end_time: time_on(new_date, 15, 0), description: 'New desc')
 
       event = calendar.find_event_by_id(id)
       expect(event.title).to eq('Renamed')
@@ -94,9 +104,9 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
   describe '#find_event_by_id' do
     it 'returns the matching event' do
       add(calendar, 'Meeting', 9, 10)
-      id = calendar.events.first.id
+      id = calendar.events.values.first.id
 
-      expect(calendar.find_event_by_id(id)).to eq(calendar.events.first)
+      expect(calendar.find_event_by_id(id)).to eq(calendar.events.values.first)
     end
 
     it 'returns nil when there is no match' do
@@ -107,7 +117,7 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
   describe '#valid_id?' do
     it 'is true for an id that exists' do
       add(calendar, 'Meeting', 9, 10)
-      id = calendar.events.first.id
+      id = calendar.events.values.first.id
 
       expect(calendar.valid_id?(id)).to be true
     end
@@ -142,9 +152,9 @@ RSpec.describe Calendar do # rubocop:disable Metrics/BlockLength
 
     it "ignores the event matching curr_id, so editing an event doesn't clash with itself" do
       add(calendar, 'Meeting', 9, 10)
-      id = calendar.events.first.id
+      id = calendar.events.values.first.id
 
-      expect(calendar.clash?(date, time_on(date, 9, 0), time_on(date, 10, 0), id)).to be false
+      expect(calendar.clash?(date, time_on(date, 9, 0), time_on(date, 10, 0), current_id: id)).to be false
     end
   end
 

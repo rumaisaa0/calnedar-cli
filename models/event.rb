@@ -21,22 +21,11 @@ class Event
     Date: #{@date}, Start Time: #{@start_time}, End Time: #{@end_time}\n\n"
   end
 
-  # def month_view
-  #   details = []
-  #   details << @id
-  #   details << @title.to_s if @title
-  #   details << @description.to_s if @description
-  #   details << @start_time.strftime('%H:%M')
-  #   details << @end_time.strftime('%H:%M')
-
-  #   puts details.join(', ')
-  # end
-
   def edit(attributes)
-    @title = attributes[:title]
-    @description = attributes[:description]
-    @date = attributes[:date]
-    @start_time = attributes[:start_time]
-    @end_time = attributes[:end_time]
+    @title = attributes[:title] if attributes.key?(:title)
+    @description = attributes[:description] if attributes.key?(:description)
+    @date = attributes[:date] if attributes.key?(:date)
+    @start_time = attributes[:start_time] if attributes.key?(:start_time)
+    @end_time = attributes[:end_time] if attributes.key?(:end_time)
   end
 end

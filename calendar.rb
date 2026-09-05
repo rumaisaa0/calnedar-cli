@@ -9,20 +9,19 @@ class Calendar
   attr_accessor :events
 
   def initialize
-    @events = []
-    # read from file and load in array
+    @events = {}
   end
 
   def add_event(date, start_time, end_time, attributes = {})
     if clash?(date, start_time, end_time)
-      puts 'clash detected'
+      puts 'Event could not be added because it clashes with an existing event.'
+      nil
     else
-      last_id = @events.map(&:id).max || 0
-      event = Event.new(last_id + 1, date, start_time, end_time, attributes)
+      event = Event.new(next_event_id, date, start_time, end_time, attributes)
 
-      @events << event
+      @events[event.id] = event
 
-      puts 'Event added successfully'
+      puts "Event '#{event.title}' added successfully."
     end
   end
 
@@ -30,16 +29,14 @@ class Calendar
     event = find_event_by_id(id)
     return if event.nil?
 
-    @events.delete(event)
-    'event remove successful!'
+    @events.delete(id)
+    'event deleted successful!'
   end
 
   def list_events
     return puts ' no events to display' if @events.empty?
 
-    @events.each do |event|
-      puts event
-    end
+    display(@events.values)
   end
 
   def edit_event(id, attributes)
@@ -47,29 +44,28 @@ class Calendar
     return if event.nil?
 
     event.edit(attributes)
-    print 'in edit calendar successful'
+    # print 'in edit calendar successful'
   end
 
   def find_event_by_date(date)
-    @events.select { |event| event.date == date } || []
+    @events.values.select { |event| event.date == date }
   end
 
-  def valid_id?(tid)
-    !!find_event_by_id(tid)
+  def valid_id?(id)
+    @events.key?(id)
   end
 
   def find_event_by_id(id)
-    @events.find { |event| event.id == id }
+    @events[id]
   end
 
-  def clash?(date, start_time, end_time, curr_id = nil)
-    @events.each do |curr_event|
-      if curr_event.id != curr_id && curr_event.date == date &&
-         curr_event.start_time < end_time && start_time < curr_event.end_time
-        return true
-      end
+  def clash?(date, start_time, end_time, options = {})
+    current_id = options[:current_id]
+
+    @events.values.any? do |curr_event|
+      curr_event.id != current_id && curr_event.date == date &&
+        curr_event.start_time < end_time && start_time < curr_event.end_time
     end
-    false
   end
 
   def date_details(date)
@@ -78,14 +74,12 @@ class Calendar
       puts "No events found on #{date}."
     else
       puts "Events on #{date}:"
-      events_on_date.each do |event|
-        puts event
-      end
+      display(events_on_date)
     end
   end
 
   def find_event_by_month(month, year)
-    @events.select do |event|
+    @events.values.select do |event|
       event.date.month == month && event.date.year == year
     end
   end
@@ -97,10 +91,7 @@ class Calendar
       puts "No events found in #{Date::MONTHNAMES[month]} #{year}."
     else
       puts "Events in #{Date::MONTHNAMES[month]} #{year}:"
-      events_in_month.each do |event|
-        puts event
-        puts '-' * 20
-      end
+      display(events_in_month)
     end
   end
 
@@ -124,5 +115,18 @@ class Calendar
     first_day = Date.new(year, month, 1)
     last_day = Date.new(year, month, -1)
     [first_day, last_day]
+  end
+
+  private
+
+  def next_event_id
+    (@events.keys.max || 0) + 1
+  end
+
+  def display(events)
+    events.each do |event|
+      puts event
+      puts '-' * 20
+    end
   end
 end

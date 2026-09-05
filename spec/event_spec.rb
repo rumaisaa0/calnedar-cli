@@ -7,7 +7,7 @@ RSpec.describe Event do # rubocop:disable Metrics/BlockLength
   let(:start_time) { time_on(date, 9, 0) }
   let(:end_time) { time_on(date, 10, 0) }
   let(:event) do
-    described_class.new(1, 'Team meeting', date, start_time, end_time, 'Weekly sync')
+    described_class.new(1, date, start_time, end_time, title: 'Team meeting', description: 'Weekly sync')
   end
 
   describe '#initialize' do
@@ -27,7 +27,8 @@ RSpec.describe Event do # rubocop:disable Metrics/BlockLength
       new_start = time_on(new_date, 14, 0)
       new_end = time_on(new_date, 15, 0)
 
-      event.edit('Renamed', new_date, new_start, new_end, 'New description')
+      event.edit(title: 'Renamed', date: new_date, start_time: new_start, end_time: new_end,
+                 description: 'New description')
 
       expect(event.title).to eq('Renamed')
       expect(event.date).to eq(new_date)

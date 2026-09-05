@@ -74,7 +74,7 @@ rescue ArgumentError
   get_user_input_month(prompt, default)
 end
 
-def valid_dur?(start_time, end_time)
+def valid_duration?(start_time, end_time)
   (end_time - start_time).positive?
 end
 

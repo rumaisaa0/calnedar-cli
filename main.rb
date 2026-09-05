@@ -8,10 +8,15 @@ def edit_menu(calendar)
   event = edit_approval(calendar)
   return if event.nil?
 
-  title, date, start_time, end_time, description = edit_details(calendar, event)
-  calendar.edit_event(event.id, { title: title, date: date, start_time: start_time, end_time: end_time,
-                                  description: description })
-  puts 'event updated successfully'
+  details = edit_details(calendar, event)
+  return if details.nil?
+
+  title, date, start_time, end_time, description = details
+
+  calendar.edit_event(event.id, title: title, date: date, start_time: start_time, end_time: end_time,
+                                description: description)
+
+  puts 'Event updated successfully.'
 end
 
 def find_event_for_edit(calendar)
@@ -34,11 +39,25 @@ def edit_details(calendar, event)
                                    event.start_time)
   end_time = get_user_input_time('enter new event end time else enter to skip ', date,
                                  event.end_time)
-  return unless valid_dur?(start_time, end_time) && !calendar.clash?(date, start_time, end_time, event.id)
+  return unless valid_edit_times?(calendar, event, date, start_time, end_time)
 
   description = get_user_input('enter new event description else enter to skip ',
                                event.description)
   [title, date, start_time, end_time, description]
+end
+
+def valid_edit_times?(calendar, event, date, start_time, end_time)
+  unless valid_duration?(start_time, end_time)
+    puts 'Invalid event time: the end time must be after the start time.'
+    return false
+  end
+
+  if calendar.clash?(date, start_time, end_time, current_id: event.id)
+    puts 'Unable to update event: the selected time overlaps with another event.'
+    return false
+  end
+
+  true
 end
 
 def valid_choice
@@ -117,8 +136,8 @@ def valid_time(date)
   loop do
     start_time = get_user_input_time('enter event  start time', date)
     end_time = get_user_input_time('enter event  end time', date)
-    puts ' End time must be after start time. Please try again.' unless valid_dur?(start_time, end_time)
-    break if valid_dur?(start_time, end_time)
+    puts ' End time must be after start time. Please try again.' unless valid_duration?(start_time, end_time)
+    break if valid_duration?(start_time, end_time)
   end
   [start_time, end_time]
 end
